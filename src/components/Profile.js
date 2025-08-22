@@ -1,4 +1,3 @@
-// src/pages/ProfilePage.js
 import { useEffect, useState } from "react";
 import { auth, db } from "../firebase";
 import { doc, getDoc, collection, getDocs } from "firebase/firestore";
