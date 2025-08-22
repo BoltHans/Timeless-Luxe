@@ -154,9 +154,3 @@ const Home = () => {
 };
 
 export default Home;
-            </div>
-        </div>
-    );
-};
-
-export default HomePage;
