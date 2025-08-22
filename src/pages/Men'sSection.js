@@ -3,20 +3,22 @@ import { db } from "../firebase";
 import { collection, query, where, getDocs } from "firebase/firestore";
 import ProductCard from "../components/ProductCard";
 
-const MenSection = () => {
+export default function MenSection() {
     const [products, setProducts] = useState([]);
 
     useEffect(() => {
-        const fetchProducts = async () => {
-            const q = query(
-                collection(db, "Products"),
-                where("status", "==", "approved"),
-                where("category", "in", ["Watches", "Wallets"])
-            );
-            const querySnapshot = await getDocs(q);
-            setProducts(querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
+        const fetchMen = async () => {
+            try {
+                const q = query(collection(db, "products"), where("gender", "==", "men"));
+                const snap = await getDocs(q);
+                const items = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+                const filtered = items.filter((p) => p.status === "active");
+                setProducts(filtered);
+            } catch (e) {
+                console.error("MenSection fetch failed:", e);
+            }
         };
-        fetchProducts();
+        fetchMen();
     }, []);
 
     return (
@@ -26,6 +28,4 @@ const MenSection = () => {
             ))}
         </div>
     );
-};
-
-export default MenSection;
+}

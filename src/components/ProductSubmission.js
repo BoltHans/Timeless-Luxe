@@ -1,128 +1,94 @@
 import { useState } from "react";
-import { db, storage } from "../firebase";
-import { collection, addDoc } from "firebase/firestore";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { db } from "../firebase";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 
-const ProductSubmission = () => {
+const placeholderImg = "https://via.placeholder.com/600x600?text=Timeless+Luxe";
+
+export default function ProductSubmission({ onAdded }) {
     const [formData, setFormData] = useState({
         name: "",
         description: "",
         price: "",
-        category: "",
+        gender: "women",
+        subCategory: "Bags",
         status: "active",
+        imageUrl: "",
     });
-
-    const [image, setImage] = useState<File | null>(null);
+    const [saving, setSaving] = useState(false);
+    const [error, setError] = useState("");
 
     const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
-    };
-
-    const handleImageChange = (e) => {
-        const file = e.target.files?.[0];
-        if (file instanceof File) {
-            setImage(file);
-        }
+        const { name, value } = e.target;
+        setFormData((p) => ({ ...p, [name]: value }));
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setError("");
+        const priceNum = Number(formData.price);
+        if (!formData.name || !formData.description || Number.isNaN(priceNum) || priceNum <= 0) {
+            setError("Please fill all fields and use a positive price.");
+            return;
+        }
 
+        setSaving(true);
         try {
-            let imageUrl = "";
-            if (image) {
-                const storageRef = ref(storage, `products/${Date.now()}-${image.name}`);
-                await uploadBytes(storageRef, image);
-                imageUrl = await getDownloadURL(storageRef);
-            }
-
-            const productsRef = collection(db, "products");
-
-            await addDoc(productsRef, {
-                ...formData,
-                price: parseFloat(formData.price),
-                imageUrl,
+            await addDoc(collection(db, "products"), {
+                name: formData.name,
+                description: formData.description,
+                price: priceNum,
+                gender: formData.gender,
+                subCategory: formData.subCategory,
+                status: formData.status,
+                imageUrl: formData.imageUrl?.trim() || placeholderImg,
+                createdAt: serverTimestamp(),
             });
-
-            alert("✅ Product added successfully!");
+            if (onAdded) onAdded();
+            alert("Product added successfully");
             setFormData({
                 name: "",
                 description: "",
                 price: "",
-                category: "",
+                gender: "women",
+                subCategory: "Bags",
                 status: "active",
+                imageUrl: "",
             });
-            setImage(null);
-        } catch (error) {
-            console.error("❌ Error adding product:", error);
-            alert("Failed to add product.");
+        } catch (err) {
+            console.error("Error adding product:", err);
+            setError(err.message || "Failed to add product.");
+        } finally {
+            setSaving(false);
         }
     };
 
     return (
-        <div className="p-6 max-w-lg mx-auto">
-            <h2 className="text-xl font-bold mb-4">Add New Product</h2>
-            <form onSubmit={handleSubmit} className="space-y-4">
-                <input
-                    type="text"
-                    name="name"
-                    placeholder="Product Name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    className="border p-2 w-full"
-                    required
-                />
-
-                <textarea
-                    name="description"
-                    placeholder="Description"
-                    value={formData.description}
-                    onChange={handleChange}
-                    className="border p-2 w-full"
-                    required
-                />
-
-                <input
-                    type="number"
-                    name="price"
-                    placeholder="Price"
-                    value={formData.price}
-                    onChange={handleChange}
-                    className="border p-2 w-full"
-                    required
-                />
-
-                <input
-                    type="text"
-                    name="category"
-                    placeholder="Category"
-                    value={formData.category}
-                    onChange={handleChange}
-                    className="border p-2 w-full"
-                    required
-                />
-
-                <select
-                    name="status"
-                    value={formData.status}
-                    onChange={handleChange}
-                    className="border p-2 w-full"
-                >
+        <div className="p-4 bg-white rounded shadow">
+            <h2 className="text-xl font-bold mb-3">Add New Product</h2>
+            {error && <p className="text-red-600 text-sm mb-2">{error}</p>}
+            <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <input name="name" placeholder="Product Name" value={formData.name} onChange={handleChange} className="border p-2 w-full md:col-span-2" required />
+                <textarea name="description" placeholder="Description" value={formData.description} onChange={handleChange} className="border p-2 w-full md:col-span-2" required />
+                <input type="number" name="price" placeholder="Price" value={formData.price} onChange={handleChange} className="border p-2 w-full" required />
+                <select name="gender" value={formData.gender} onChange={handleChange} className="border p-2 w-full">
+                    <option value="women">Women</option>
+                    <option value="men">Men</option>
+                </select>
+                <select name="subCategory" value={formData.subCategory} onChange={handleChange} className="border p-2 w-full">
+                    <option value="Bags">Bags</option>
+                    <option value="Wallets">Wallets</option>
+                    <option value="Watches">Watches</option>
+                    <option value="Jewelry">Jewelry</option>
+                </select>
+                <select name="status" value={formData.status} onChange={handleChange} className="border p-2 w-full">
                     <option value="active">Active</option>
                     <option value="inactive">Inactive</option>
                 </select>
-
-                <input type="file" onChange={handleImageChange} className="w-full" />
-
-                <button
-                    type="submit"
-                    className="bg-black text-white px-4 py-2 rounded w-full"
-                >
-                    Submit Product
+                <input name="imageUrl" placeholder="Image URL (optional)" value={formData.imageUrl} onChange={handleChange} className="border p-2 w-full md:col-span-2" />
+                <button type="submit" disabled={saving} className="bg-black text-white px-4 py-2 rounded md:col-span-2">
+                    {saving ? "Saving..." : "Submit Product"}
                 </button>
             </form>
         </div>
     );
-};
-
-export default ProductSubmission;
+}

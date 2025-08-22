@@ -1,10 +1,7 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-<<<<<<< HEAD
 import { AuthProvider } from "./context/AuthContext";
 import Layout from "./components/Layout";
-=======
->>>>>>> 8433e3520285295031a35fe3dcd6d229dfbac415
 
 // Components
 import Navbar from "./components/Navbar";
@@ -26,7 +23,6 @@ import ManageProducts from "./pages/admin/ManageProduct";
 
 function App() {
     return (
-<<<<<<< HEAD
         <AuthProvider>
             <Router>
                 <div className="app-container flex flex-col min-h-screen">
@@ -58,27 +54,6 @@ function App() {
                 </div>
             </Router>
         </AuthProvider>
-=======
-        <Router>
-            <Navbar />
-            <Routes>
-                {/* Public Pages */}
-                <Route path="/" element={<Home />} />
-                <Route path="/contact" element={<ContactUs />} />
-                <Route path="/wishlist" element={<WishlistPage />} />
-                <Route path="/register" element={<Register />} />
-                <Route path="/login" element={<LogIn />} />
-                <Route path="/women" element={<WomenSection />} />
-                <Route path="/men" element={<MenSection />} />
-
-                {/* Admin Pages */}
-                <Route path="/admin" element={<AdminDashboard />} />
-                <Route path="/admin/manage-users" element={<ManageUsers />} />
-                <Route path="/admin/manage-products" element={<ManageProducts />} />
-            </Routes>
-            <Footer />
-        </Router>
->>>>>>> 8433e3520285295031a35fe3dcd6d229dfbac415
     );
 }
 

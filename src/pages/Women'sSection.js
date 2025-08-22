@@ -1,23 +1,24 @@
-// src/pages/WomenSection.js
 import { useEffect, useState } from "react";
 import { db } from "../firebase";
 import { collection, query, where, getDocs } from "firebase/firestore";
 import ProductCard from "../components/ProductCard";
 
-const WomenSection = () => {
+export default function WomenSection() {
     const [products, setProducts] = useState([]);
 
     useEffect(() => {
-        const fetchProducts = async () => {
-            const q = query(
-                collection(db, "Products"),
-                where("status", "==", "approved"),
-                where("category", "in", ["Bags", "Jewelry"])
-            );
-            const querySnapshot = await getDocs(q);
-            setProducts(querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
+        const fetchWomen = async () => {
+            try {
+                const q = query(collection(db, "products"), where("gender", "==", "women"));
+                const snap = await getDocs(q);
+                const items = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+                const filtered = items.filter((p) => p.status === "active");
+                setProducts(filtered);
+            } catch (e) {
+                console.error("WomenSection fetch failed:", e);
+            }
         };
-        fetchProducts();
+        fetchWomen();
     }, []);
 
     return (
@@ -27,6 +28,4 @@ const WomenSection = () => {
             ))}
         </div>
     );
-};
-
-export default WomenSection;
+}

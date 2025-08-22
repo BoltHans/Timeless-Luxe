@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { auth, db } from "../firebase";
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { doc, setDoc } from "firebase/firestore";
+import { doc, setDoc, serverTimestamp } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
+
+const ADMIN_EMAILS = ["admin@timelessluxe.com"]; // Add your admin email(s) here
 
 export default function Register() {
     const [email, setEmail] = useState("");
@@ -12,21 +14,20 @@ export default function Register() {
 
     const handleRegister = async (e) => {
         e.preventDefault();
+        setError("");
         try {
-            const userCred = await createUserWithEmailAndPassword(auth, email, password);
-            const isFirstAdmin = email === "youradminemail@example.com"; // Specify your admin email
-            await setDoc(doc(db, "users", userCred.user.uid), {
+            const cred = await createUserWithEmailAndPassword(auth, email, password);
+            const isAdmin = ADMIN_EMAILS.includes(email.toLowerCase());
+
+            await setDoc(doc(db, "users", cred.user.uid), {
                 email,
-                role: isFirstAdmin ? "admin" : "user" // Set role based on the condition
+                role: isAdmin ? "admin" : "user",
+                createdAt: serverTimestamp(),
             });
-            // Navigate to the correct page based on role
-            if (isFirstAdmin) {
-                navigate("/admin");
-            } else {
-                navigate("/");
-            }
+
+            navigate(isAdmin ? "/admin" : "/");
         } catch (err) {
-            setError(err.message);
+            setError(err.message || "Registration failed");
         }
     };
 
@@ -34,7 +35,7 @@ export default function Register() {
         <div className="flex justify-center items-center h-screen bg-gray-100">
             <form onSubmit={handleRegister} className="bg-white p-6 rounded shadow-md w-80">
                 <h2 className="text-xl font-bold mb-4">Register</h2>
-                {error && <p className="text-red-500 text-sm">{error}</p>}
+                {error && <p className="text-red-500 text-sm mb-2">{error}</p>}
                 <input
                     type="email"
                     placeholder="Email"
