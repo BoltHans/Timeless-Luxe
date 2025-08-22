@@ -1,9 +1,9 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Layout from "./components/Layout";
 
-// Components
-import Navbar from "./components/Navbar";
-import Footer from "./components/Footer";
+// Import theme styles
+import "./styles/theme.css";
 
 // Pages
 import Home from "./pages/Home";
@@ -22,23 +22,23 @@ import ManageProducts from "./pages/admin/ManageProduct";
 function App() {
     return (
         <Router>
-            <Navbar />
-            <Routes>
-                {/* Public Pages */}
-                <Route path="/" element={<Home />} />
-                <Route path="/contact" element={<ContactUs />} />
-                <Route path="/wishlist" element={<WishlistPage />} />
-                <Route path="/register" element={<Register />} />
-                <Route path="/login" element={<LogIn />} />
-                <Route path="/women" element={<WomenSection />} />
-                <Route path="/men" element={<MenSection />} />
+            <Layout>
+                <Routes>
+                    {/* Public Pages */}
+                    <Route path="/" element={<Home />} />
+                    <Route path="/contact" element={<ContactUs />} />
+                    <Route path="/wishlist" element={<WishlistPage />} />
+                    <Route path="/register" element={<Register />} />
+                    <Route path="/login" element={<LogIn />} />
+                    <Route path="/women" element={<WomenSection />} />
+                    <Route path="/men" element={<MenSection />} />
 
-                {/* Admin Pages */}
-                <Route path="/admin" element={<AdminDashboard />} />
-                <Route path="/admin/manage-users" element={<ManageUsers />} />
-                <Route path="/admin/manage-products" element={<ManageProducts />} />
-            </Routes>
-            <Footer />
+                    {/* Admin Pages */}
+                    <Route path="/admin" element={<AdminDashboard />} />
+                    <Route path="/admin/manage-users" element={<ManageUsers />} />
+                    <Route path="/admin/manage-products" element={<ManageProducts />} />
+                </Routes>
+            </Layout>
         </Router>
     );
 }
