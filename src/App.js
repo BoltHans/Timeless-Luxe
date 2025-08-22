@@ -3,10 +3,6 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import Layout from "./components/Layout";
 
-// Components
-import Navbar from "./components/Navbar";
-import Footer from "./components/Footer";
-
 // Pages
 import Home from "./pages/Home";
 import ContactUs from "./pages/ContactUs";
@@ -25,33 +21,24 @@ function App() {
     return (
         <AuthProvider>
             <Router>
-                <div className="app-container flex flex-col min-h-screen">
-                    <Navbar />
+                <Routes>
+                    {/* Public Layout */}
+                    <Route path="/" element={<Layout />}>
+                        <Route index element={<Home />} />
+                        <Route path="contact" element={<ContactUs />} />
+                        <Route path="wishlist" element={<WishlistPage />} />
+                        <Route path="register" element={<Register />} />
+                        <Route path="login" element={<LogIn />} />
+                        <Route path="women" element={<WomenSection />} />
+                        <Route path="men" element={<MenSection />} />
+                    </Route>
 
-                    <main className="flex-grow">
-                        <Routes>
-                            {/* Public Layout */}
-                            <Route path="/" element={<Layout />}>
-                                <Route index element={<Home />} />
-                                <Route path="contact" element={<ContactUs />} />
-                                <Route path="wishlist" element={<WishlistPage />} />
-                                <Route path="register" element={<Register />} />
-                                <Route path="login" element={<LogIn />} />
-                                <Route path="women" element={<WomenSection />} />
-                                <Route path="men" element={<MenSection />} />
-                            </Route>
-
-                            {/* Admin Routes (use same layout or a custom AdminLayout if you prefer) */}
-                            <Route path="/admin" element={<Layout />}>
-                                <Route index element={<AdminDashboard />} />
-                                <Route path="manage-users" element={<ManageUsers />} />
-                                <Route path="manage-products" element={<ManageProducts />} />
-                            </Route>
-                        </Routes>
-                    </main>
-
-                    <Footer />
-                </div>
+                    <Route path="/admin" element={<Layout />}>
+                        <Route index element={<AdminDashboard />} />
+                        <Route path="manage-users" element={<ManageUsers />} />
+                        <Route path="manage-products" element={<ManageProducts />} />
+                    </Route>
+                </Routes>
             </Router>
         </AuthProvider>
     );
