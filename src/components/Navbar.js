@@ -54,6 +54,7 @@ const Navbar = () => {
                         <Link to="/women" className="nav-link">Women's Collection</Link>
                         <Link to="/men" className="nav-link">Men's Collection</Link>
                         {user && <Link to="/wishlist" className="nav-link">Wishlist</Link>}
+                        }
                         <Link to="/contact" className="nav-link">Contact</Link>
                         
                         {/* Categories Dropdown */}
@@ -133,6 +134,7 @@ const Navbar = () => {
                             <Link to="/women" className="mobile-nav-link">Women's Collection</Link>
                             <Link to="/men" className="mobile-nav-link">Men's Collection</Link>
                             {user && <Link to="/wishlist" className="mobile-nav-link">Wishlist</Link>}
+                            }
                             <Link to="/contact" className="mobile-nav-link">Contact</Link>
                             
                             {categories.map(cat => (
